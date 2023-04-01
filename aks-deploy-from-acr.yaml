@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-springboot-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: aks
+  template:
+    metadata:
+      labels:
+        app: aks
+    spec:
+      containers:
+        - name: my-springboot-app
+          image: myacrrepo4321.azurecr.io/akannan1087/aks:#{Build.BuildId}#
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8085
+# service type loadbalancer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: aks
+    k8s-app: aks
+  name: aks
+spec:
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 8085
+  type: LoadBalancer
+  selector:
+    app: aks
